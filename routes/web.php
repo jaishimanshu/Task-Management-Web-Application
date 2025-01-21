@@ -20,8 +20,6 @@ Route::post('/update-status', [StoreController::class, 'updateStatus']);
 
 Route::post('/update-data', [StoreController::class, 'updateData']);
 
-Route::get('/filter-tasks', [StoreController::class, 'filterTasks']);
-
 Route::get('/',[StoreController::class,'home']);
 
 Route::get('/edit/{id}', [StoreController::class, 'edit']);
