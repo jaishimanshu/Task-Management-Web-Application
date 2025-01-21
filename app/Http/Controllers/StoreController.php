@@ -22,32 +22,8 @@ if ($deleted) {
 }
 
 
-public function filterTasks(Request $request)
-{
-    $filter = $request->input('filter', 'ALL');
-
-    $query = Persons::query();
-
-    if ($filter === 'Completed') {
-        $query->where('status', 1); 
-    } elseif ($filter === 'not_complted') {
-        $query->where('status', 0); 
-    }
-
-    $tasks = $query->paginate(10); 
-
-    $tasks_html = view('view', compact('tasks'))->render();
-    $pagination = $tasks->links()->render(); 
-
-    return response()->json([
-        'tasks_html' => $tasks_html,
-        'pagination' => $pagination,
-    ]);
-}
-
 public function updateData(Request $request)
 {
-    // Validate incoming data
     $validated = $request->validate([
         'id' => 'required|exists:persons,id',
         'date' => 'required|date',
@@ -55,7 +31,6 @@ public function updateData(Request $request)
         'name' => 'required|string|max:255',
     ]);
 
-    // Attempt to update the record
     $update = Persons::where('id', $request->id)
                      ->update([
                          'due_date' => $request->date,
@@ -95,11 +70,19 @@ if ($updated) {
     }
     
 
- public function index()
-{
-    $tasks = Persons::orderBy('id', 'desc')->paginate(10);
-    return view('view', compact('tasks'));
-}
+    public function index(Request $request)
+    {
+        $status = $request->input('data_sel', 'ALL');
+        if ($status == 'Completed') {
+            $tasks = Persons::where('status', 1)->orderBy('id', 'desc')->paginate(10);
+        } elseif ($status == 'not_completed') {
+            $tasks = Persons::where('status', 0)->orderBy('id', 'desc')->paginate(10);
+        } else {
+            $tasks = Persons::orderBy('id', 'desc')->paginate(10);
+        }
+        return view('view', compact('tasks'));
+    }
+    
 
     public function store(Request $request)
 {
